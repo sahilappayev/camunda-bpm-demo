@@ -1,0 +1,14 @@
+logging:
+  level:
+    org:
+      camunda:
+        bpm:
+          client: debug
+server:
+  port: 8081
+camunda:
+  bpm:
+    client:
+      base-url: http://localhost:8080/engine-rest
+      disable-auto-fetching: false
+      disable-backoff-strategy: false
