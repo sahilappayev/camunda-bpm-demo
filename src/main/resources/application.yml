@@ -1,14 +1,22 @@
-logging:
-  level:
-    org:
-      camunda:
-        bpm:
-          client: debug
+#logging:
+#  level:
+#    org:
+#      camunda:
+#        bpm:
+#          client: debug
 server:
-  port: 8081
-camunda:
-  bpm:
-    client:
-      base-url: http://localhost:8080/engine-rest
-      disable-auto-fetching: false
-      disable-backoff-strategy: false
+  port: 8088
+#camunda:
+#  bpm:
+#    client:
+#      base-url: http://localhost:8080/engine-rest
+#      disable-auto-fetching: false
+#      disable-backoff-strategy: false
+zeebe:
+  client:
+#    enabled: true
+    broker:
+      gateway-address: 127.0.0.1:26500
+    security:
+      plaintext: true
+#    connection-mode: ADDRESS
