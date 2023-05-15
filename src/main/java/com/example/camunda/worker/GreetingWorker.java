@@ -19,13 +19,14 @@ public class GreetingWorker {
 
 //    private final ZeebeClient zeebeClient;
 
-    @JobWorker(type = "greeting")
+    @JobWorker(type = "greeting", autoComplete = false)
     public void greet(JobClient client, ActivatedJob job) {
         log.info("Greeting job started!");
 
         Map<String, Object> variables = new HashMap<>();
         Random random = new Random();
         variables.put("greet", random.nextBoolean());
+        variables.put("pin", "XXX1234");
 
         if (random.nextBoolean()) {
             client.newThrowErrorCommand(job.getKey())

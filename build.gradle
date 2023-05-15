@@ -33,7 +33,7 @@ dependencies {
 //	implementation 'org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-external-task-client:7.19.0'
 
 	// Camunda 8 (Zeebe)
- 	implementation 'io.camunda.spring:spring-boot-starter-camunda:8.2.0'
+ 	implementation 'io.camunda.spring:spring-boot-starter-camunda:8.2.0' // 8.0.5
 
 
 

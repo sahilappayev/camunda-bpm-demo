@@ -14,9 +14,11 @@ server:
 #      disable-backoff-strategy: false
 zeebe:
   client:
-#    enabled: true
+    enabled: true
     broker:
       gateway-address: 127.0.0.1:26500
     security:
       plaintext: true
-#    connection-mode: ADDRESS
+    worker:
+      threads: 5
+    connection-mode: ADDRESS
