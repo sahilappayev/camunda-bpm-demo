@@ -2,6 +2,7 @@ package com.example.camunda.worker;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
+import io.camunda.zeebe.spring.client.annotation.CustomHeaders;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +32,13 @@ public class HelloWorker {
                 .exceptionally(e -> {
                     throw new RuntimeException("Exception occurred while job execution: " + e.getMessage(), e);
                 });
-        logJob(job, newVariables);
         log.info("Hello job completed!");
     }
 
 
     @JobWorker(type = "check-the-variables")
-    public void  check(ActivatedJob job){
+    public void  check(ActivatedJob job, @CustomHeaders Map<String, String> headers){
+        logJob(job, headers);
         log.info("check log: {}", job.getVariablesAsMap());
     }
 
