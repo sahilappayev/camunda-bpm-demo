@@ -27,12 +27,12 @@ public class GreetingWorker {
 
         Map<String, Object> variables = new HashMap<>();
         Random random = new Random();
-        variables.put("greet", random.nextBoolean());
+        variables.put("greet", true);
         variables.put("pin", "XXX1234");
         variables.put("oldProcessId", "XXX1234old");
         variables.put("processId", "XXX1234new");
 
-        if (random.nextBoolean()) {
+        if (false) {
             client.newThrowErrorCommand(job.getKey())
                     .errorCode("unexpectedError")
                     .errorMessage("Unexpected error occurred!").send()

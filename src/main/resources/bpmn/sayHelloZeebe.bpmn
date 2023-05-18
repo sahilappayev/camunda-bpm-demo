@@ -4,7 +4,6 @@
     <bpmn:startEvent id="startEvent" name="Start">
       <bpmn:outgoing>Flow_03t48c6</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_03t48c6" sourceRef="startEvent" targetRef="greeting" />
     <bpmn:serviceTask id="greeting" name="Greeting">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="greeting" />
@@ -17,29 +16,10 @@
       <bpmn:outgoing>greet</bpmn:outgoing>
       <bpmn:outgoing>notGreet</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_0xnejq5" sourceRef="greeting" targetRef="Gateway_12qn6fh" />
-    <bpmn:sequenceFlow id="greet" name="greet" sourceRef="Gateway_12qn6fh" targetRef="hello">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=greet</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="notGreet" name="notGreet" sourceRef="Gateway_12qn6fh" targetRef="Gateway_1k8wfcn">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=not(greet)</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:boundaryEvent id="errorEvent" attachedToRef="greeting">
-      <bpmn:outgoing>Flow_0rgjo4b</bpmn:outgoing>
-      <bpmn:errorEventDefinition id="ErrorEventDefinition_1rc98sh" />
-    </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_0rgjo4b" sourceRef="errorEvent" targetRef="problemChecking" />
     <bpmn:userTask id="problemChecking" name="Check the problem">
       <bpmn:incoming>Flow_0rgjo4b</bpmn:incoming>
       <bpmn:outgoing>Flow_0bgkins</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:boundaryEvent id="timeEvent" attachedToRef="problemChecking">
-      <bpmn:outgoing>Flow_1xz0l15</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_0xb0qpm">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:boundaryEvent>
-    <bpmn:sequenceFlow id="Flow_1xz0l15" sourceRef="timeEvent" targetRef="Gateway_1k8wfcn" />
     <bpmn:serviceTask id="hello" name="Hello">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="hello" />
@@ -55,9 +35,6 @@
       <bpmn:incoming>Flow_0qyoscm</bpmn:incoming>
       <bpmn:outgoing>Flow_1ppgq5k</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0bgkins" sourceRef="problemChecking" targetRef="hello" />
-    <bpmn:sequenceFlow id="Flow_1raw1xz" sourceRef="hello" targetRef="Event_1ree3hc" />
-    <bpmn:sequenceFlow id="Flow_0qyoscm" sourceRef="Event_1ree3hc" targetRef="check-the-variables" />
     <bpmn:intermediateThrowEvent id="Event_1ree3hc">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="message-event" />
@@ -69,6 +46,12 @@
       <bpmn:outgoing>Flow_0qyoscm</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_10fi0o3" />
     </bpmn:intermediateThrowEvent>
+    <bpmn:exclusiveGateway id="Gateway_1k8wfcn">
+      <bpmn:incoming>notGreet</bpmn:incoming>
+      <bpmn:incoming>Flow_1ppgq5k</bpmn:incoming>
+      <bpmn:incoming>Flow_1xz0l15</bpmn:incoming>
+      <bpmn:outgoing>Flow_0596o54</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
     <bpmn:endEvent id="endEvent" name="End">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="message-event" />
@@ -76,22 +59,51 @@
       <bpmn:incoming>Flow_0hy8ur5</bpmn:incoming>
       <bpmn:messageEventDefinition id="MessageEventDefinition_0iecuok" />
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1ppgq5k" sourceRef="check-the-variables" targetRef="Gateway_1k8wfcn" />
-    <bpmn:exclusiveGateway id="Gateway_1k8wfcn">
-      <bpmn:incoming>notGreet</bpmn:incoming>
-      <bpmn:incoming>Flow_1ppgq5k</bpmn:incoming>
-      <bpmn:incoming>Flow_1xz0l15</bpmn:incoming>
-      <bpmn:outgoing>Flow_0596o54</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_0596o54" sourceRef="Gateway_1k8wfcn" targetRef="check-context" />
-    <bpmn:sequenceFlow id="Flow_0hy8ur5" sourceRef="check-context" targetRef="endEvent" />
     <bpmn:serviceTask id="check-context" name="check-context">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="check-context" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0596o54</bpmn:incoming>
+      <bpmn:incoming>Flow_0dw4lhj</bpmn:incoming>
       <bpmn:outgoing>Flow_0hy8ur5</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="timeEvent" attachedToRef="problemChecking">
+      <bpmn:outgoing>Flow_1xz0l15</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0xb0qpm">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="errorEvent" attachedToRef="greeting">
+      <bpmn:outgoing>Flow_0rgjo4b</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1rc98sh" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_03t48c6" sourceRef="startEvent" targetRef="greeting" />
+    <bpmn:sequenceFlow id="Flow_0xnejq5" sourceRef="greeting" targetRef="Gateway_12qn6fh" />
+    <bpmn:sequenceFlow id="greet" name="greet" sourceRef="Gateway_12qn6fh" targetRef="hello">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=greet</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="notGreet" name="notGreet" sourceRef="Gateway_12qn6fh" targetRef="Gateway_1k8wfcn">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=not(greet)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0rgjo4b" sourceRef="errorEvent" targetRef="problemChecking" />
+    <bpmn:sequenceFlow id="Flow_0bgkins" sourceRef="problemChecking" targetRef="hello" />
+    <bpmn:sequenceFlow id="Flow_1raw1xz" sourceRef="hello" targetRef="Event_1ree3hc" />
+    <bpmn:sequenceFlow id="Flow_0qyoscm" sourceRef="Event_1ree3hc" targetRef="check-the-variables" />
+    <bpmn:sequenceFlow id="Flow_1ppgq5k" sourceRef="check-the-variables" targetRef="Gateway_1k8wfcn" />
+    <bpmn:sequenceFlow id="Flow_1xz0l15" sourceRef="timeEvent" targetRef="Gateway_1k8wfcn" />
+    <bpmn:sequenceFlow id="Flow_0596o54" sourceRef="Gateway_1k8wfcn" targetRef="Activity_1c0jocf" />
+    <bpmn:sequenceFlow id="Flow_0hy8ur5" sourceRef="check-context" targetRef="endEvent" />
+    <bpmn:callActivity id="Activity_1c0jocf" name="get-user-info">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="get-user-info" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=fullName" target="fullName" />
+          <zeebe:output source="=age" target="age" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0596o54</bpmn:incoming>
+      <bpmn:outgoing>Flow_0dw4lhj</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0dw4lhj" sourceRef="Activity_1c0jocf" targetRef="check-context" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="SayHello">
@@ -126,13 +138,17 @@
         <dc:Bounds x="625" y="415" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1nvgs68_di" bpmnElement="endEvent">
-        <dc:Bounds x="1052" y="422" width="36" height="36" />
+        <dc:Bounds x="1402" y="422" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1098" y="433" width="20" height="14" />
+          <dc:Bounds x="1448" y="433" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0yeoj62_di" bpmnElement="check-context">
-        <dc:Bounds x="850" y="400" width="100" height="80" />
+        <dc:Bounds x="1200" y="400" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1c0jocf_di" bpmnElement="Activity_1c0jocf">
+        <dc:Bounds x="950" y="400" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0vymbkk_di" bpmnElement="timeEvent">
@@ -193,11 +209,15 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0596o54_di" bpmnElement="Flow_0596o54">
         <di:waypoint x="675" y="440" />
-        <di:waypoint x="850" y="440" />
+        <di:waypoint x="950" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0hy8ur5_di" bpmnElement="Flow_0hy8ur5">
-        <di:waypoint x="950" y="440" />
-        <di:waypoint x="1052" y="440" />
+        <di:waypoint x="1300" y="440" />
+        <di:waypoint x="1402" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dw4lhj_di" bpmnElement="Flow_0dw4lhj">
+        <di:waypoint x="1050" y="440" />
+        <di:waypoint x="1200" y="440" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
