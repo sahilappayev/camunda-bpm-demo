@@ -59,18 +59,30 @@ public class GreetingWorker {
         boolean isOld = Boolean.parseBoolean(headers.get("isOld"));
 
         Map<String, Object> variables = job.getVariablesAsMap();
-
         Object processId = isOld ? variables.get("oldProcessId") : variables.get("processId");
+
+//        throw new ZeebeBpmnError("", "");
+
+
+        Map<String, Object> variablesMap = new HashMap<>();
+        variablesMap.put("status", "cancel");
+        variablesMap.put("cancelId", processId);
+        variablesMap.put("errorCode", variables.get("errorCode"));
+
 
         zeebeClient.newPublishMessageCommand()
                 .messageName("updateOrderStatus")
                 .correlationKey("processId")
-                .variables(Map.of("status", "cancel", "cancelId", processId))
+                .variables(variablesMap)
                 .send()
                 .exceptionally(e -> {
                     throw new RuntimeException("Exception occurred while job execution: " + e.getMessage(), e);
                 });
     }
+
+
+
+
 
 
 }
