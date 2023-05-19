@@ -1,6 +1,7 @@
 package com.example.camunda.worker;
 
 import com.example.camunda.util.ZeebeUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.CustomHeaders;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
@@ -26,6 +27,7 @@ import static com.example.camunda.util.ZeebeUtil.logJob;
 public class UserWorker {
 
     private final ZeebeUtil zeebeUtil;
+    private final ObjectMapper objectMapper;
 
     @JobWorker(type = "check-the-variables")
     public UserDto check(ActivatedJob job, @CustomHeaders Map<String, String> headers) {
@@ -36,6 +38,7 @@ public class UserWorker {
                 .surname("Appayev")
                 .birthday(LocalDate.of(1995, 10, 20))
                 .accounts(new String[]{"account123", "account456"})
+                .address(Address.builder().country("USA").city("NYC").name("New York").build())
                 .build();
 
         logJob(job, headers);
@@ -46,6 +49,10 @@ public class UserWorker {
     @JobWorker(type = "check-context")
     public void checkContext(ActivatedJob job, @VariablesAsType ContextDto contextDto) {
         log.info("checkContext job started with: {}", contextDto);
+        log.info("ObjectMapper: {}", objectMapper.getClass().getSimpleName());
+        Address address = objectMapper.convertValue(job.getVariablesAsMap().get("address"), Address.class);
+        Object addressName = job.getVariablesAsMap().get("address.name");
+        log.info("Address: {} \n Address Name: {}", address, addressName);
         logJob(job, null);
     }
 
@@ -71,7 +78,23 @@ public class UserWorker {
         private String surname;
         private LocalDate birthday;
         private String[] accounts;
+
+        private Address address;
     }
+
+
+    @ToString
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Address {
+        private String country;
+        private String city;
+        private String name;
+    }
+
 
     @ToString
     @NoArgsConstructor
