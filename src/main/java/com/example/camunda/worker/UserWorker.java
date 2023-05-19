@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.CustomHeaders;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
+import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.VariablesAsType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,10 +48,10 @@ public class UserWorker {
     }
 
     @JobWorker(type = "check-context")
-    public void checkContext(ActivatedJob job, @VariablesAsType ContextDto contextDto) {
+    public void checkContext(ActivatedJob job, @VariablesAsType ContextDto contextDto, @Variable Address address) {
         log.info("checkContext job started with: {}", contextDto);
         log.info("ObjectMapper: {}", objectMapper.getClass().getSimpleName());
-        Address address = objectMapper.convertValue(job.getVariablesAsMap().get("address"), Address.class);
+//        Address address = objectMapper.convertValue(job.getVariablesAsMap().get("address"), Address.class);
         Object addressName = job.getVariablesAsMap().get("address.name");
         log.info("Address: {} \n Address Name: {}", address, addressName);
         logJob(job, null);
