@@ -7,6 +7,7 @@ import io.camunda.zeebe.spring.client.annotation.CustomHeaders;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import io.camunda.zeebe.spring.client.annotation.VariablesAsType;
+import io.camunda.zeebe.spring.client.exception.ZeebeBpmnError;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,13 +48,26 @@ public class UserWorker {
         return userDto;
     }
 
-    @JobWorker(type = "check-context")
+    @JobWorker(type = "check-context", fetchAllVariables = true)
     public void checkContext(ActivatedJob job, @VariablesAsType ContextDto contextDto, @Variable Address address) {
         log.info("checkContext job started with: {}", contextDto);
         log.info("ObjectMapper: {}", objectMapper.getClass().getSimpleName());
 //        Address address = objectMapper.convertValue(job.getVariablesAsMap().get("address"), Address.class);
         Object addressName = job.getVariablesAsMap().get("address.name");
         log.info("Address: {} \n Address Name: {}", address, addressName);
+        logJob(job, null);
+        boolean b = true;
+
+        if (b) {
+            throw new ZeebeBpmnError("exp_code","Hey I am exp!");
+        }
+
+    }
+
+
+    @JobWorker(type = "check-context-2")
+    public void checkContext2(ActivatedJob job, @VariablesAsType ContextDto contextDto) {
+        log.info("checkContext2 job started with: {}", contextDto);
         logJob(job, null);
     }
 
@@ -113,6 +127,7 @@ public class UserWorker {
         private String fullName;
         private int age;
         private String[] accounts;
+        private Address address;
     }
 
     @ToString

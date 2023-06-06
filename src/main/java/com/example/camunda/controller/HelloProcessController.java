@@ -1,15 +1,22 @@
 package com.example.camunda.controller;
 
 import com.example.camunda.client.model.StartProcessResponseDto;
+import com.example.camunda.model.ZeebeEventJobValue;
+import com.example.camunda.model.ZeebeEventWrapper;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,10 +45,10 @@ public class HelloProcessController {
                         .newCreateInstanceCommand()
                         .bpmnProcessId(processKey)
                         .latestVersion()
-//                        .variables("{\"a\": \"" + UUID.randomUUID().toString() + "\",\"b\": \"" + new Date().toString() + "\"}")
+                        .variables(Map.of("processId", UUID.randomUUID(), "pin", "600DLXF"))
                         .withResult()
                         .send()
-                        .join();
+                        .join(10, TimeUnit.SECONDS);
 
         StartProcessResponseDto processResponseDto = new StartProcessResponseDto();
         processResponseDto.setBusinessKey(event.getBpmnProcessId());
@@ -50,6 +57,18 @@ public class HelloProcessController {
         processResponseDto.setVersion(event.getVersion());
 
         return ResponseEntity.ok().body(processResponseDto);
+    }
+
+
+    @GetMapping
+    public ResponseEntity<ZeebeEventWrapper> event() {
+
+        ZeebeEventJobValue jobValue = new ZeebeEventJobValue();
+
+        ZeebeEventWrapper eventWrapper = new ZeebeEventWrapper();
+        eventWrapper.setValueType("JOB");
+        eventWrapper.setValue(jobValue);
+        return ResponseEntity.ok(eventWrapper);
     }
 
 

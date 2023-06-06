@@ -83,6 +83,37 @@ public class GreetingWorker {
 
 
 
+    @JobWorker(type = "cancel-order")
+    public void cancelOrder(ActivatedJob job, @CustomHeaders Map<String, String> headers) {
+        log.info("messageEvent started with: {}", headers);
+
+//        throw new ZeebeBpmnError("", "");
+
+        Map<String, Object> variablesMap = new HashMap<>();
+        variablesMap.put("status", "cancel");
+        variablesMap.put("processId", job.getVariablesAsMap().get("processId"));
+
+        zeebeClient.newPublishMessageCommand()
+                .messageName("depositOrderStatusUpdate")
+                .correlationKey("processId")
+                .variables(variablesMap)
+                .send()
+                .exceptionally(e -> {
+                    throw new RuntimeException("Exception occurred while job execution: " + e.getMessage(), e);
+                });
+    }
+
+
+
+
+    @JobWorker(type = "cancel-order-with-satus")
+    public void cancelOrderService(){
+        log.info("==============cancel-order-with-satus task called===============");
+    }
+
+
+
+
 
 
 }
